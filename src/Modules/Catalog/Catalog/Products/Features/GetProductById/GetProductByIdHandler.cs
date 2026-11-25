@@ -1,0 +1,25 @@
+﻿
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+
+namespace Catalog.Products.Features.GetProductById;
+
+public record GetProductByIdQuery(Guid Id):IQuery<GetProductByIdResult>;
+public record GetProductByIdResult(ProductDto Product);
+
+internal class GetProductByIdHandler(CatalogdbContext dbContext) : IQueryHandler<GetProductByIdQuery, GetProductByIdResult>
+{
+    public async Task<GetProductByIdResult> Handle(GetProductByIdQuery query, CancellationToken cancellationToken)
+    {
+        var product = await dbContext.Products
+            .SingleOrDefaultAsync(p => p.Id == query.Id);
+
+        if (product == null)
+        {
+            throw new ArgumentException($"Product not found :{query.Id}");
+        }
+        var productDto = product.Adapt<ProductDto>();
+
+        return new GetProductByIdResult(productDto);
+
+    }
+}

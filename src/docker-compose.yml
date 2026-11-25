@@ -1,0 +1,6 @@
+version: '3.4'
+services:
+    eshopdb:
+        image: postgres:17
+volumes:
+    postgres_eshopdb:
